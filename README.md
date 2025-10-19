@@ -24,6 +24,13 @@ Um sistema bancário completo desenvolvido em Python com suporte a múltiplos id
 - **Confirmações de Segurança**: Proteção contra operações acidentais
 - **Feedback Visual**: Mensagens claras de sucesso, erro e status
 
+### 🛡️ Sistema de Proteção Dupla
+- **Triggers de Banco de Dados**: Proteção automática no nível do SQLite
+- **Prevenção de Exclusão**: Impede deletar contas com saldo não-zero
+- **Proteção de Saldo Negativo**: Bloqueia operações que criem saldos negativos
+- **Validação de Transações**: Garante que todas as transações tenham valores positivos
+- **Integridade Garantida**: Proteção mesmo com acesso direto ao arquivo de banco de dados
+
 ## 📋 Pré-requisitos
 
 ### Software Necessário
@@ -226,6 +233,78 @@ export CORELEDGER_LANG=pt
 export CORELEDGER_DB_PATH=/caminho/para/banco.db
 ```
 
+## 🛡️ Sistema de Proteção de Integridade
+
+### Triggers Automáticos de Banco de Dados
+
+O CoreLedger implementa um sistema **duplo de proteção** para garantir a integridade dos dados:
+
+#### 🔒 Proteções Implementadas
+
+1. **Prevenção de Exclusão de Contas com Saldo**
+   ```sql
+   -- Impede deletar contas que ainda possuem dinheiro
+   CREATE TRIGGER prevent_delete_nonzero_balance
+   BEFORE DELETE ON accounts
+   WHEN CAST(OLD.balance AS REAL) != 0.0
+   ```
+
+2. **Prevenção de Saldos Negativos**
+   ```sql
+   -- Impede que contas tenham saldo negativo
+   CREATE TRIGGER prevent_negative_balance
+   BEFORE UPDATE OF balance ON accounts  
+   WHEN CAST(NEW.balance AS REAL) < 0.0
+   ```
+
+3. **Validação de Transações**
+   ```sql
+   -- Garante que transações tenham valores positivos
+   CREATE TRIGGER validate_transaction_amount
+   BEFORE INSERT ON transactions
+   WHEN CAST(NEW.amount AS REAL) <= 0.0
+   ```
+
+#### 🎯 Como Funciona
+
+- **Inicialização Automática**: Os triggers são criados automaticamente na primeira execução
+- **Proteção Transparente**: Funcionam em segundo plano sem afetar a experiência do usuário
+- **Acesso Direto Protegido**: Mesmo editores SQL externos respeitam as regras de negócio
+- **Mensagens Claras**: Erros informativos quando regras são violadas
+
+#### 🧪 Testando a Proteção
+
+Você pode testar os triggers manualmente:
+
+```bash
+# Execute o arquivo de demonstração
+python examples/triggers_demo.py
+
+# Resultado esperado:
+# ✅ Trigger bloqueou exclusão de conta com saldo
+# ✅ Trigger bloqueou criação de saldo negativo  
+# ✅ Trigger bloqueou transação com valor inválido
+```
+
+#### 🔧 Gerenciamento de Triggers
+
+```python
+from src.models.database import DatabaseTriggersManager
+
+# Criar instância do gerenciador
+db = DatabaseManager("meu_banco.db")
+triggers = DatabaseTriggersManager(db.connection)
+
+# Listar triggers existentes
+triggers.list_triggers()
+
+# Criar todos os triggers de proteção
+triggers.create_all_protection_triggers()
+
+# Testar funcionamento
+results = triggers.test_triggers()
+```
+
 ## 🌐 Idiomas Suportados
 
 | Código | Idioma | Status | Símbolo Monetário |
@@ -316,6 +395,21 @@ python multilingual_cli.py
 # "Conta Poupança" -> R$ 20.000,00
 # "Fundo Emergência" -> R$ 10.000,00
 # Transferências e histórico detalhado
+```
+
+### Exemplo 4: Proteção de Integridade em Ação
+```python
+# Cenário: Tentativa de operação inválida
+python multilingual_cli.py
+
+# 1. Criar conta "Teste" com R$ 1.000,00
+# 2. Tentar excluir conta "Teste" (falhará - tem saldo)
+# 3. Zerar saldo da conta "Teste"  
+# 4. Excluir conta "Teste" (funcionará - saldo zero)
+
+# Resultado: Sistema protege automaticamente contra operações inválidas
+# ✅ "Não é possível excluir conta com saldo não-zero: R$ 1000.00"
+# ✅ "Conta excluída com sucesso após zerar saldo"
 ```
 
 ## 🤝 Contribuindo
