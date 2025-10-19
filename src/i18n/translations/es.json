@@ -137,5 +137,7 @@
   "error_file": "Error de archivo: {error}",
   
   "currency_symbol": "$",
-  "currency_format": "${amount}"
+  "currency_format": "${amount}",
+  
+  "config_auto_delete_message": "Configuración de idioma restablecida. Podrás elegir nuevamente en la próxima ejecución."
 }

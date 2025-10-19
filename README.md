@@ -40,7 +40,7 @@ Um sistema bancário completo desenvolvido em Python com suporte a múltiplos id
 
 ### 1. Clone o Repositório
 ```bash
-git clone https://github.com/seu-usuario/CoreLedger.git
+git clone https://github.com/ViniciusOliveiraOV/CoreLedger.git
 cd CoreLedger
 ```
 
@@ -67,12 +67,11 @@ pip install pytest decimal
 
 ### 4. Execute o Sistema Multilíngue
 ```bash
-# Interface multilíngue completa (RECOMENDADO)
+# Interface multilíngue completa (ÚNICO ARQUIVO)
 python multilingual_cli.py
-
-# Interface em inglês apenas
-python interactive_cli.py
 ```
+
+> **💡 Nota**: A configuração de idioma é resetada a cada execução, permitindo que você escolha o idioma novamente sempre que desejar.
 
 ### 5. Primeira Execução
 
@@ -175,7 +174,7 @@ CoreLedger/
 │   │       ├── de.json         # Alemão
 │   │       ├── zh.json         # Chinês
 │   │       ├── ja.json         # Japonês
-│   │       └── pt.json         # Português (em desenvolvimento)
+│   │       └── pt.json         # Português
 │   └── ledger.py                # Sistema bancário principal
 ├── tests/                       # Testes automatizados
 │   ├── __init__.py
@@ -184,8 +183,7 @@ CoreLedger/
 │   ├── test_ledger.py          # Testes do sistema principal
 │   └── test_transaction.py     # Testes de transações
 ├── examples/                    # Exemplos de uso
-├── multilingual_cli.py         # Interface multilíngue (PRINCIPAL)
-├── interactive_cli.py          # Interface em inglês
+├── multilingual_cli.py         # Interface multilíngue (ÚNICO ARQUIVO)
 ├── requirements.txt            # Dependências Python
 └── README.md                   # Este arquivo
 ```
@@ -237,7 +235,7 @@ export CORELEDGER_DB_PATH=/caminho/para/banco.db
 | `fr` | Français | ✅ Completo | $ |
 | `de` | Deutsch | ✅ Completo | $ |
 | `it` | Italiano | 🔄 Em desenvolvimento | € |
-| `pt` | Português | 🔄 Em desenvolvimento | R$ |
+| `pt` | Português | ✅ Completo | R$ |
 | `ru` | Русский | 📋 Planejado | ₽ |
 | `zh` | 中文 | ✅ Completo | ¥ |
 | `ja` | 日本語 | ✅ Completo | ¥ |
@@ -245,7 +243,25 @@ export CORELEDGER_DB_PATH=/caminho/para/banco.db
 | `ar` | العربية | 📋 Planejado | $ |
 | `hi` | हिन्दी | 📋 Planejado | ₹ |
 
-## 🔧 Solução de Problemas
+## 🌍 Comportamento Multilíngue
+
+### � Reset Automático de Idioma
+A configuração de idioma é **automaticamente resetada** após cada execução:
+
+- ✅ **Flexibilidade**: Permite escolher idioma diferente a cada uso
+- ✅ **Conveniência**: Ideal para computadores compartilhados  
+- ✅ **Personalização**: Cada sessão pode ter seu próprio idioma
+
+### 📁 Dados Preservados
+- ✅ **Banco de Dados**: `multilingual_bank.db` (mantém todos os seus dados)
+- ✅ **Contas e Transações**: Histórico completo preservado
+- ✅ **Sistema**: Sempre disponível para uso contínuo
+
+
+
+## �🔧 Solução de Problemas
+
+
 
 ### Problema: Erro de Codificação no Terminal Windows
 ```bash
@@ -349,38 +365,15 @@ pytest tests/ -k "test_translations"
 
 Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## 🙏 Agradecimentos
 
-- **Python Software Foundation** - Linguagem Python
-- **SQLite** - Banco de dados embarcado
-- **pytest** - Framework de testes
-- **Comunidade Open Source** - Inspiração e recursos
-
-## 📞 Suporte
-
-- **GitHub Issues**: [Reportar problemas](https://github.com/seu-usuario/CoreLedger/issues)
-- **Documentação**: Este README e comentários no código
-- **Email**: seu-email@exemplo.com
-
----
 
 ### 🚀 **Comece Agora!**
 
 ```bash
-git clone https://github.com/seu-usuario/CoreLedger.git
+git clone https://github.com/ViniciusOliveiraOV/CoreLedger.git
 cd CoreLedger
 python -m venv venv
 venv\Scripts\activate  # Windows
 pip install pytest
 python multilingual_cli.py
 ```
-
-**Desenvolvido com ❤️ em Python | Sistema Bancário Multilíngue Completo**
-
-## Design Principles
-
-- **Decimal Precision**: All monetary values use `decimal.Decimal` to avoid floating-point errors
-- **ACID Transactions**: Database operations are wrapped in transactions for consistency
-- **Input Validation**: Comprehensive validation for all operations
-- **Error Handling**: Clear exceptions and error messages
-- **Separation of Concerns**: Clean architecture with separate models and business logic

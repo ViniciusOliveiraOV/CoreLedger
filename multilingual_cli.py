@@ -8,6 +8,7 @@ allowing users to select their preferred language at startup.
 import sys
 import os
 import json
+import atexit
 from decimal import Decimal, InvalidOperation
 from typing import Dict, List, Optional
 
@@ -28,6 +29,9 @@ class MultilingualBankCLI:
         self.ledger = None
         self.running = True
         self.lang_manager = get_language_manager()
+        
+        # Registrar função de auto-delete da configuração de idioma
+        atexit.register(self.auto_delete_language_config)
         
     def start(self):
         """Start the interactive CLI session with language selection."""
@@ -512,6 +516,18 @@ class MultilingualBankCLI:
         print(f"💾 {_('summary_saved')}")
         
         self.running = False
+    
+    def auto_delete_language_config(self):
+        """Auto-delete apenas a configuração de idioma após a execução."""
+        try:
+            config_file = os.path.join(os.path.dirname(self.db_path), '.coreledger_config.json')
+            
+            if os.path.exists(config_file):
+                os.remove(config_file)
+                print(f"\n🔄 {_('config_auto_delete_message')}")
+        except Exception as e:
+            # Falha silenciosa - não é crítico
+            pass
 
 
 def main():

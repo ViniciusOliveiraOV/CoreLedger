@@ -232,6 +232,9 @@ class LanguageManager:
             # Currency
             'currency_symbol': '$',
             'currency_format': '${amount}',
+            
+            # Config auto-delete
+            'config_auto_delete_message': 'Language configuration reset. You can choose again on next run.',
         }
     
     def set_language(self, language_code: str) -> bool:
