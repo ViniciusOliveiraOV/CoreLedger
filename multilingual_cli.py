@@ -473,8 +473,19 @@ class MultilingualBankCLI:
         """Ask user for confirmation."""
         while True:
             # Get appropriate yes/no responses for current language
-            yes_responses = [_('app_yes').lower(), 'y', 'yes', 'si', 'sí', 'oui', 'ja', 'はい', '是']
-            no_responses = [_('app_no').lower(), 'n', 'no', 'non', 'nein', 'いいえ', '否']
+            yes_responses = ['s', 'sim', 'y', 'yes', 'si', 'sí', 'oui', 'ja', 'はい', '是']
+            no_responses = ['n', 'não', 'nao', 'no', 'non', 'nein', 'いいえ', '否']
+            
+            # Add translated responses if available
+            try:
+                yes_translated = _('app_yes').lower()
+                no_translated = _('app_no').lower()
+                if yes_translated not in yes_responses:
+                    yes_responses.append(yes_translated)
+                if no_translated not in no_responses:
+                    no_responses.append(no_translated)
+            except:
+                pass  # Fallback if translation fails
             
             response = self.get_user_input(_('input_confirm_prompt', message=message)).strip().lower()
             
