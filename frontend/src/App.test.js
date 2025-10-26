@@ -1,9 +1,10 @@
+// Ensure Jest uses the manual mock before any imports
+jest.mock('axios');
+
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import App from './App';
-
-jest.mock('axios');
 
 // Minimal WebSocket stub for the test environment
 beforeAll(() => {
