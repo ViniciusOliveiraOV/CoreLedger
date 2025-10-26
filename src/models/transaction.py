@@ -90,7 +90,7 @@ class TransactionRepository:
                    transaction_type, description, created_at
             FROM transactions
             WHERE from_account_id = ? OR to_account_id = ?
-            ORDER BY created_at DESC
+            ORDER BY id DESC
         """
         rows = self.db.execute_query(query, (account_id, account_id))
         return [self._row_to_transaction(row) for row in rows]

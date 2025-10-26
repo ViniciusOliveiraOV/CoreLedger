@@ -21,11 +21,12 @@ class DatabaseManager:
         """Initialize database tables and protection triggers."""
         cursor = self.connection.cursor()
         
-        # Create accounts table
+        # Create accounts table (use INTEGER PRIMARY KEY AUTOINCREMENT so tests
+        # and repositories receive numeric IDs via lastrowid)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS accounts (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
                 balance TEXT NOT NULL DEFAULT '0.00',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -71,9 +72,17 @@ class DatabaseManager:
         """Execute a query and return results."""
         cursor = self.connection.cursor()
         cursor.execute(query, params)
-        if fetch_one:
-            return cursor.fetchone()
-        return cursor.fetchall()
+        # If query is a SELECT, return results without committing.
+        sql = query.strip().lower()
+        if sql.startswith("select"):
+            if fetch_one:
+                return cursor.fetchone()
+            return cursor.fetchall()
+
+        # For INSERT/UPDATE/DELETE and others, commit the change.
+        self.connection.commit()
+        # For non-select queries, caller may expect the cursor for lastrowid or rowcount.
+        return cursor
     
     def execute_insert(self, query: str, params: tuple = ()) -> int:
         """Execute an insert query and return the last row ID."""
@@ -81,6 +90,38 @@ class DatabaseManager:
         cursor.execute(query, params)
         self.connection.commit()
         return cursor.lastrowid
+
+    @contextmanager
+    def transaction(self):
+        """Context manager for a database transaction.
+
+        Usage:
+            with db.transaction():
+                # do multiple db operations
+
+        Commits on success, rolls back on exception.
+        Thread-safe via an internal lock to avoid concurrent BEGIN/COMMIT races.
+        """
+        # Ensure only one thread can start/commit a transaction at a time.
+        lock = getattr(self, '_transaction_lock', None)
+        if lock is None:
+            self._transaction_lock = threading.Lock()
+            lock = self._transaction_lock
+
+        lock.acquire()
+        try:
+            try:
+                self.connection.execute('BEGIN')
+            except Exception:
+                # Some SQLite wrappers auto-begin; ignore if BEGIN fails.
+                pass
+            yield
+            self.connection.commit()
+        except Exception:
+            self.connection.rollback()
+            raise
+        finally:
+            lock.release()
     
     def close(self):
         """Close database connection."""

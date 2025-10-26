@@ -1,0 +1,27 @@
+
+# Informações de Conexão Power BI - CoreLedger
+# Gerado em: 2025-10-19 21:49:04
+
+## Arquivos Exportados:
+- accounts.csv / accounts.xlsx          - Dados das contas
+- transactions.csv / transactions.xlsx  - Dados das transações  
+- monthly_summary.csv / monthly_summary.xlsx - Resumo mensal
+- cashflow_analysis.csv                 - Análise de fluxo de caixa
+- kpis.csv                             - Indicadores principais
+
+## Para Power BI Desktop:
+1. Obter Dados → Texto/CSV
+2. Selecione os arquivos CSV desta pasta
+3. Configure relacionamentos:
+   - accounts[id] ↔ transactions[from_account_id]
+   - accounts[id] ↔ transactions[to_account_id]
+
+## Para conexão direta SQLite:
+1. Obter Dados → SQLite
+2. Selecione: C:\Users\stayc\OneDrive\Documentos\code\py\CoreLedger\multilingual_bank.db
+3. Importe tabelas: accounts, transactions
+
+## Campos Principais:
+- Contas: id, account_name, balance_numeric, balance_category
+- Transações: amount_numeric, transaction_type_pt, transaction_date
+- Datas: Use 'transaction_date' para eixos temporais

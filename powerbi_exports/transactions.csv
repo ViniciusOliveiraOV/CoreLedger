@@ -1,0 +1,5 @@
+﻿id,from_account_id,from_account_name,to_account_id,to_account_name,amount_numeric,amount_text,transaction_type,transaction_type_pt,description,created_at,transaction_date,year_month,year,month,day,weekday,weekday_name,amount_category
+4,,,8.0,vinici,25.0,25.00,deposit,Depósito,Initial deposit for account 'vinici',2025-10-20 00:27:05,2025-10-20,2025-10,2025,10,20,1,Segunda,Pequena
+3,2.0,,,,1500.0,1500.00,withdrawal,Saque,Withdrawal from Jo?o Silva,2025-10-19 23:23:05,2025-10-19,2025-10,2025,10,19,0,Domingo,Grande
+2,,,2.0,,1500.0,1500,deposit,Depósito,Initial deposit for account 'Jo?o Silva',2025-10-19 22:53:50,2025-10-19,2025-10,2025,10,19,0,Domingo,Grande
+1,,,1.0,Test Account,100.0,100,deposit,Depósito,Initial deposit for account 'Test Account',2025-10-19 22:49:28,2025-10-19,2025-10,2025,10,19,0,Domingo,Média

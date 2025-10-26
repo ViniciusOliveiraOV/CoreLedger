@@ -1,0 +1,5 @@
+﻿id,account_name,balance_numeric,balance_text,created_at,created_date,created_year_month,created_year,balance_category
+1,Test Account,100.0,100.00,2025-10-19 22:49:28,2025-10-19,2025-10,2025,Baixo
+8,vinici,25.0,25.00,2025-10-20 00:27:05,2025-10-20,2025-10,2025,Baixo
+4,jose,0.0,0.00,2025-10-19 23:18:53,2025-10-19,2025-10,2025,Zero
+5,João da Silva,0.0,0.00,2025-10-19 23:21:37,2025-10-19,2025-10,2025,Zero

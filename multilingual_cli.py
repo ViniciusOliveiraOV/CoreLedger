@@ -541,8 +541,35 @@ class MultilingualBankCLI:
             pass
 
 
+def check_and_setup_environment():
+    """Check if we're in the right environment and setup if needed."""
+    try:
+        # Try to import required packages
+        import pandas
+        return True
+    except ImportError:
+        # Check if we have a virtual environment
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        venv_python = os.path.join(script_dir, '.venv', 'Scripts', 'python.exe')
+        
+        if os.path.exists(venv_python):
+            print("🔄 Detectado ambiente virtual. Executando com ambiente correto...")
+            import subprocess
+            # Re-execute with the virtual environment Python
+            subprocess.run([venv_python] + sys.argv)
+            sys.exit(0)
+        else:
+            print("❌ Ambiente virtual não encontrado.")
+            print("💡 Execute: python -m venv .venv && .venv\\Scripts\\activate && pip install -r requirements.txt")
+            return False
+
+
 def main():
     """Main entry point for the multilingual CLI application."""
+    # Check environment first
+    if not check_and_setup_environment():
+        sys.exit(1)
+    
     # Get database path from command line or use default
     db_path = sys.argv[1] if len(sys.argv) > 1 else "multilingual_bank.db"
     
@@ -551,6 +578,10 @@ def main():
         cli.start()
     except Exception as e:
         print(f"\n💥 Fatal error: {e}")
+        # Try to give more helpful error message
+        if "No module named" in str(e):
+            print("💡 Parece que há dependências faltando.")
+            print("   Execute: .venv\\Scripts\\activate && pip install -r requirements.txt")
         sys.exit(1)
 
 

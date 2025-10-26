@@ -88,3 +88,8 @@ Thumbs.db
 bank_accounts.db
 multilingual_bank.db
 test_*.db
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/build/
