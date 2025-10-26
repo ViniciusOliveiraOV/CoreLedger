@@ -2,10 +2,13 @@
 FastAPI Backend for CoreLedger Real-time Dashboard - Standalone Version
 """
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Request
+from fastapi.responses import Response as FastAPIResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import asyncio
+import time
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 from typing import List, Dict, Any
 from datetime import datetime
 import uvicorn
@@ -13,6 +16,14 @@ import sqlite3
 from decimal import Decimal
 
 app = FastAPI(title="CoreLedger API", version="1.0.0")
+
+# Prometheus metrics
+REQUEST_COUNT = Counter(
+    'coreledger_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'http_status']
+)
+REQUEST_LATENCY = Histogram(
+    'coreledger_request_latency_seconds', 'Request latency in seconds', ['method', 'endpoint']
+)
 
 # Configure CORS for React frontend
 app.add_middleware(
@@ -189,6 +200,37 @@ def get_dashboard_data():
         conn.close()
 
 # REST API Endpoints
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    start = time.time()
+    response = await call_next(request)
+    elapsed = time.time() - start
+    try:
+        endpoint = request.url.path
+        method = request.method
+        status = getattr(response, 'status_code', 200)
+        REQUEST_LATENCY.labels(method=method, endpoint=endpoint).observe(elapsed)
+        REQUEST_COUNT.labels(method=method, endpoint=endpoint, http_status=str(status)).inc()
+    except Exception:
+        pass
+    return response
+
+@app.get("/metrics")
+def metrics():
+    """Prometheus metrics endpoint"""
+    return FastAPIResponse(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+@app.get("/healthz")
+def healthz():
+    """Simple healthcheck: DB connectivity and WS connection count"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        conn.close()
+        return {"status": "ok", "db": "ok", "ws_connections": len(manager.active_connections)}
+    except Exception as e:
+        return {"status": "fail", "error": str(e)}
 @app.get("/")
 async def root():
     return {"message": "CoreLedger API is running", "version": "1.0.0"}
