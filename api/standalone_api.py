@@ -8,7 +8,37 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 import asyncio
 import time
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+try:
+    from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+    PROMETHEUS_AVAILABLE = True
+except Exception:
+    # prometheus_client is optional for local/dev; provide no-op fallbacks so app still runs
+    PROMETHEUS_AVAILABLE = False
+
+    class Counter:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def labels(self, *args, **kwargs):
+            return self
+
+        def inc(self, *args, **kwargs):
+            return None
+
+    class Histogram:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def labels(self, *args, **kwargs):
+            return self
+
+        def observe(self, *args, **kwargs):
+            return None
+
+    def generate_latest():
+        return b""
+
+    CONTENT_TYPE_LATEST = "text/plain; version=0.0.4; charset=utf-8"
 from typing import List, Dict, Any
 from datetime import datetime
 import uvicorn
